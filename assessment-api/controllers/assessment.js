@@ -43,11 +43,12 @@ module.exports.evaluate = function(req, res) {
             retValue.isNext = nextResponse.isNext;
             retValue.isPrev = nextResponse.isPrev;
             retValue.isLast = nextResponse.isLast;
+            retValue.status = nextResponse.status;
         }
 
         if(retValue.results != undefined) {
-            if(retValue.results.totalQuestions == retValue.totalAnswered) {
-                retValue.status = "done";
+            if(retValue.results.totalQuestions == retValue.results.totalAnswered) {
+                retValue.status = "Done";
             }
         }
 
