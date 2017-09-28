@@ -3,32 +3,57 @@ var questions = require("../data/questions.json");
 var userAssessment = require("./user-assessment.js");
 
 // Get Next Question:
-//  - Returns correct Next Question - if user skipped jumped 
-//  - Returns next question if current question is answered
-//  - Returns undefined if all questions are answered
-function getNextQuestion(user, email, currentQId, currentAns) {
-    var retValue = undefined;
+function getNextQuestion(user, email, currentQId, currentAns, prev) {
+    var retValue = {};
+
+    // Get current question index
+    var qIdx = 0;
+    if(currentQId !== undefined) {
+        qIdx = questions.findIndex(x => x.id == currentQId);
+    }
+    console.log("Current question index: %s", qIdx);
 
     // Mark current answer
-    if(currentQId !== undefined && currentAns !== undefined) {
-        
-        // Make sure question is valid
-        var idx = questions.findIndex(x => x.id == currentQId);
-        if(idx >= 0) {
-            // Record the answer
-            userAssessment.markAsAnswer(user, email, currentQId, currentAns);
-        }
+    if(qIdx !== -1 && currentQId !== undefined && currentAns !== undefined) {
+        // Record the answer
+        userAssessment.markAsAnswer(user, email, currentQId, currentAns);
     }
 
     // Get next question
-    var idx = questions.findIndex(x => x.id == currentQId);
-    if(idx !== undefined) {
-        if(idx < (questions.length - 1)) {
-            retValue = questions[idx+1];
-        } else {
-            retValue = "done";
+    if(currentQId === undefined) {
+        retValue.isFirst = true;
+        retValue.question = questions[qIdx];
+    } else {
+        if(qIdx !== -1) {
+            if(prev) {
+                if(qIdx === 0) {
+                    retValue.isFirst = true;
+                } else {
+                    retValue.question = questions[qIdx-1];
+                }
+            } else {
+                if(qIdx < (questions.length - 1)) {
+                    retValue.question = questions[qIdx+1];
+                } else {
+                    retValue.isLast = true;
+                }
+            }
         }
     } 
+
+    retValue.success = true;
+
+    // If this is last question, display final summary/results
+    if(retValue.isLast === true) {
+        console.log("getNextQuestion: Completing User Assessment");
+        retValue.results = userAssessment.completeAssessment(user, email);
+        retValue.results.totalQuestions = questions.length;
+
+        // If not all questions answered - don't show score
+        if(retValue.results.totalQuestions !== retValue.results.totalAnswered) {
+            retValue.results.totalScore = undefined;
+        }
+    }
     
     return retValue;
 }
