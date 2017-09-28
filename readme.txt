@@ -10,3 +10,28 @@ https://github.com/facebookincubator/create-react-app
 Good Luck!
 
 
+Solution:
+=========
+
+Please do the following to test:
+
+git clone https://github.com/tjayram/node-react-assessment.git
+
+API: New terminal Window at Project Root Folder:
+------------------------------------------------
+cd assessment-api
+npm install
+npm start
+
+WEB: New terminal Window at Project Root Folder:
+------------------------------------------------
+cd assessment-web
+npm install
+npm start
+
+To view UI:
+-----------
+Open browser window: http://localhost:3000
+
+
+Tip: Using Visual Studio Code 2017 will help!
